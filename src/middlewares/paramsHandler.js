@@ -1,8 +1,8 @@
-import snakeCase from 'snake-case'
+import { snakeCase } from 'snake-case'
 const paramsHandler = (req, res, next) => {
-  req.query.filter = req.query.filter || null
+  req.query.filter = handleString(req.query.filter)
   req.query.filtering = isFiltering(req.query.filter, false)
-  req.query.sortBy = req.query.sortBy && req.query.sortBy !== 'null' && req.query.sortBy !== 'undefined' ? snakeCase(req.query.sortBy) : null
+  req.query.sortBy = handleString(req.query.sortBy) ? snakeCase(handleString(req.query.sortBy)) : handleString(req.query.sortBy)
   req.query.direction = handleBoolean(req.query.descending, false) ? 'DESC' : 'ASC'
   req.query.limit = handleInteger(req.query.rowsPerPage, 10) ? handleInteger(req.query.rowsPerPage, 10) : 1000000000
   req.query.offset = req.query.page ? parseInt(req.query.page) - 1 : 0
@@ -11,6 +11,13 @@ const paramsHandler = (req, res, next) => {
   delete req.query.rowsPerPage
   delete req.query.page
   return next()
+}
+
+const handleString = (value, defaultValue = null) => {
+  if (value === undefined || (typeof value === 'string' && (value === 'null' || value === 'undefined'))) {
+    return defaultValue
+  }
+  return value.trim()
 }
 
 const handleInteger = (value, defaultValue) => {

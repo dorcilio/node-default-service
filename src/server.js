@@ -5,11 +5,13 @@ import chalk from 'chalk'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import compression from 'compression'
+import morgan from 'morgan'
 import routes from './routes'
 import tokenChecker from './middlewares/tokenChecker'
 import paramsHandler from './middlewares/paramsHandler'
 
 const app = express()
+app.use(morgan('dev'))
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 }
 }))
